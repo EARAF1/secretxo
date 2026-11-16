@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Холст — Подсознание, Парадигмы, Законы Вселенной</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0710;
+    --surface: #14101c;
+    --surface2: #1d1728;
+    --border: rgba(255,255,255,0.08);
+    --text: #f0ecf8;
+    --muted: #9a90b0;
+    --pink: #ff4d8d;
+    --purple: #a855f7;
+    --gold: #fbbf24;
+    --green: #22c55e;
+    --blue: #4dabff;
+    --radius: 20px;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(168,85,247,0.1), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(255,77,141,0.1), transparent 40%);
+    background-attachment: fixed;
+  }
+
+  /* ================= HEADER ================= */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,7,16,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    font-size: 1.25rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--pink), var(--gold), var(--purple));
+    background-size: 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 6s linear infinite;
+    cursor: pointer;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+  }
+  @keyframes shine { to { background-position: 200%; } }
+
+  .header-nav {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-left: auto;
+  }
+
+  .nav-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted);
+    padding: 8px 14px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-btn:hover { color: var(--text); border-color: var(--border); }
+  .nav-btn.active {
+    color: var(--pink);
+    border-color: var(--pink);
+    background: rgba(255,77,141,0.1);
+  }
+
+  /* ================= LAYOUT ================= */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 22px 80px;
+  }
+
+  .view { display: none; animation: fadeUp 0.4s ease; }
+  .view.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-title {
+    font-size: clamp(1.7rem, 4vw, 2.5rem);
+    font-weight: 900;
+    margin-bottom: 8px;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+  }
+  .page-title span {
+    background: linear-gradient(90deg, var(--pink), var(--gold));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .page-desc {
+    color: var(--muted);
+    font-size: 1rem;
+    margin-bottom: 32px;
+    max-width: 700px;
+  }
+
+  /* ================= ORACLE ================= */
+  .oracle-box {
+    background: linear-gradient(135deg, rgba(255,77,141,0.07), rgba(168,85,247,0.07));
+    border: 1px solid rgba(255,77,141,0.28);
+    border-radius: 24px;
+    padding: 30px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .oracle-box::before {
+    content: '✦';
+    position: absolute;
+    top: -30px; right: 14px;
+    font-size: 9rem;
+    color: rgba(255,77,141,0.07);
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  .oracle-box h2 {
+    font-size: 1.25rem;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .oracle-input {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 15px 18px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    min-height: 66px;
+    transition: border-color 0.2s;
+    line-height: 1.5;
+  }
+  .oracle-input:focus { outline: none; border-color: var(--pink); }
+
+  .oracle-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn {
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    box-shadow: 0 8px 24px rgba(255,77,141,0.28);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(255,77,141,0.45); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    box-shadow: none;
+  }
+  .btn-ghost:hover { border-color: var(--pink); color: var(--pink); }
+
+  .hint {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  .quick-tags {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+  .quick-tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 13px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .quick-tag:hover { border-color: var(--pink); color: var(--pink); }
+
+  .oracle-answer {
+    margin-top: 22px;
+    padding: 22px;
+    background: rgba(0,0,0,0.35);
+    border-radius: 16px;
+    border-left: 4px solid var(--gold);
+    display: none;
+    animation: fadeUp 0.4s ease;
+  }
+  .oracle-answer.show { display: block; }
+
+  .oracle-answer .q-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .oracle-answer .q-text {
+    font-size: 0.92rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .oracle-answer .label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .oracle-answer .text {
+    font-size: 0.98rem;
+    line-height: 1.75;
+    color: #e0d8f0;
+    white-space: pre-wrap;
+  }
+  .oracle-answer .source {
+    margin-top: 16px;
+    font-size: 0.8rem;
+    color: var(--pink);
+    font-weight: 600;
+  }
+
+  .related-links {
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .related-link {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .related-link:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ================= CARDS ================= */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,77,141,0.4);
+    box-shadow: 0 14px 34px rgba(255,77,141,0.1);
+  }
+  .card .icon { font-size: 1.9rem; margin-bottom: 10px; display: block; }
+  .card h3 { font-size: 1rem; margin-bottom: 5px; line-height: 1.35; }
+  .card p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+  .card .card-meta {
+    font-size: 0.72rem;
+    color: var(--pink);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 12px;
+    display: block;
+  }
+
+  /* ================= SLIDER ================= */
+  .slider-wrap {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    overflow: hidden;
+    min-height: 320px;
+    margin-bottom: 18px;
+  }
+
+  .slide { display: none; padding: 36px; animation: fadeUp 0.35s ease; }
+  .slide.active { display: block; }
+
+  .slide-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--pink);
+    background: rgba(255,77,141,0.12);
+    padding: 5px 14px;
+    border-radius: 50px;
+    margin-bottom: 14px;
+  }
+
+  .slide h3 {
+    font-size: clamp(1.2rem, 3vw, 1.7rem);
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .slide p {
+    color: #d0c8e0;
+    font-size: 0.96rem;
+    line-height: 1.75;
+    margin-bottom: 12px;
+  }
+
+  .slide .highlight {
+    background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(255,77,141,0.06));
+    border-left: 3px solid var(--gold);
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-style: italic;
+    color: #e8dff0;
+    margin: 16px 0 0;
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+
+  .slider-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .slider-arrow {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 1.15rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .slider-arrow:hover { border-color: var(--pink); color: var(--pink); }
+
+  .slider-nav-center {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex: 1;
+  }
+
+  .slide-counter {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 700;
+    min-width: 55px;
+    text-align: center;
+  }
+
+  .slider-dots {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 400px;
+  }
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s;
+    padding: 0;
+  }
+  .dot.active { background: var(--pink); width: 22px; border-radius: 4px; }
+
+  /* ================= THEME BLOCK ================= */
+  .theme-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .theme-block h3 {
+    font-size: 1.15rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .theme-block .theme-sub {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-bottom: 18px;
+  }
+  .theme-block .source-item {
+    border-top: 1px solid var(--border);
+    padding: 14px 0;
+  }
+  .theme-block .source-item:first-of-type { border-top: none; padding-top: 0; }
+  .theme-block .source-author {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--pink);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+  }
+  .theme-block .source-text {
+    font-size: 0.92rem;
+    color: #d0c8e0;
+    line-height: 1.7;
+  }
+
+  /* ================= SEARCH ================= */
+  .search-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 14px 22px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1rem;
+    margin-bottom: 24px;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { outline: none; border-color: var(--pink); }
+
+  .search-result {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .search-result:hover { border-color: var(--pink); transform: translateX(4px); }
+  .search-result .r-type {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+  }
+  .search-result .r-title {
+    font-size: 0.98rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .search-result .r-snippet {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  /* ================= ARTICLE ================= */
+  .article-body {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 36px;
+  }
+  .article-body h3 {
+    font-size: 1.15rem;
+    margin: 26px 0 10px;
+    color: var(--gold);
+  }
+  .article-body h3:first-child { margin-top: 0; }
+  .article-body p {
+    color: #d0c8e0;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    margin-bottom: 12px;
+  }
+  .article-body blockquote {
+    background: rgba(251,191,36,0.06);
+    border-left: 3px solid var(--gold);
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-style: italic;
+    color: #e8dff0;
+    margin: 16px 0;
+  }
+
+  .back-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-size: 0.83rem;
+    cursor: pointer;
+    font-family: inherit;
+    margin-bottom: 18px;
+    transition: all 0.2s;
+    font-weight: 600;
+  }
+  .back-btn:hover { border-color: var(--pink); color: var(--pink); }
+
+  .disclaimer {
+    background: rgba(251,191,36,0.05);
+    border: 1px solid rgba(251,191,36,0.22);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin-top: 32px;
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .disclaimer b { color: var(--gold); }
+
+  /* ================= HOME STATS ================= */
+  .home-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .home-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    text-align: center;
+  }
+  .home-stat .num {
+    font-size: 1.7rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--pink), var(--gold));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .home-stat .label {
+    font-size: 0.74rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 40px 0 14px;
+  }
+
+  /* ================= RESPONSIVE ================= */
+  @media (max-width: 700px) {
+    header { padding: 10px 14px; }
+    .logo { font-size: 1rem; }
+    .header-nav { gap: 3px; }
+    .nav-btn { padding: 6px 10px; font-size: 0.76rem; }
+    .container { padding: 20px 14px 60px; }
+    .slide { padding: 22px; }
+    .article-body { padding: 22px; }
+    .oracle-box { padding: 20px; }
+    .slider-nav { padding: 10px 14px; }
+    .theme-block { padding: 18px; }
+    .cards-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 420px) {
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo" onclick="go('home')">✦ Холст</div>
+  <nav class="header-nav">
+    <button class="nav-btn active" data-view="home" onclick="go('home')">Оракул</button>
+    <button class="nav-btn" data-view="books" onclick="go('books')">Книги</button>
+    <button class="nav-btn" data-view="themes" onclick="go('themes')">Темы</button>
+    <button class="nav-btn" data-view="laws" onclick="go('laws')">Законы</button>
+    <button class="nav-btn" data-view="authors" onclick="go('authors')">Авторы</button>
+    <button class="nav-btn" data-view="search" onclick="go('search')">Поиск</button>
+  </nav>
+</header>
+
+<div class="container">
+
+  <!-- ================= HOME ================= -->
+  <div class="view active" id="view-home">
+    <h1 class="page-title">Задай вопрос <span>Вселенной</span></h1>
+    <p class="page-desc">
+      Спроси о чём угодно — о подсознании, парадигмах, привычках, целях, деньгах, страхе или законах мироздания.
+      Холст найдёт ответ в учениях Джона Кехо, Боба Проктора, Джеймса Клира и других авторов.
+    </p>
+
+    <div class="oracle-box">
+      <h2>🔮 Оракул</h2>
+      <textarea class="oracle-input" id="oracleInput" placeholder="Например: почему я не могу изменить привычку? / как работает закон вибрации? / как поверить в себя? / почему нет денег?"></textarea>
+      <div class="oracle-actions">
+        <button class="btn" id="askBtn" onclick="askOracle()">Получить ответ</button>
+        <button class="btn btn-ghost" onclick="clearOracle()">Очистить</button>
+        <span class="hint">Ctrl + Enter</span>
+      </div>
+      <div class="quick-tags">
+        <button class="quick-tag" onclick="quickAsk('Почему я не могу изменить привычку?')">Привычки</button>
+        <button class="quick-tag" onclick="quickAsk('Как работает закон вибрации?')">Вибрация</button>
+        <button class="quick-tag" onclick="quickAsk('Что такое парадигма?')">Парадигма</button>
+        <button class="quick-tag" onclick="quickAsk('Как перестать бояться?')">Страх</button>
+        <button class="quick-tag" onclick="quickAsk('Как поверить в себя?')">Уверенность</button>
+        <button class="quick-tag" onclick="quickAsk('Почему в жизни нет денег?')">Деньги</button>
+        <button class="quick-tag" onclick="quickAsk('Как найти свою цель?')">Цель</button>
+        <button class="quick-tag" onclick="quickAsk('Как работает подсознание?')">Подсознание</button>
+      </div>
+      <div class="oracle-answer" id="oracleAnswer">
+        <div class="q-label">Твой вопрос</div>
+        <div class="q-text" id="questionEcho"></div>
+        <div class="label" id="answerLabel">Ответ</div>
+        <div class="text" id="answerText"></div>
+        <div class="source" id="answerSource"></div>
+        <div class="related-links" id="relatedLinks"></div>
+      </div>
+    </div>
+
+    <div class="home-stats">
+      <div class="home-stat"><div class="num">3</div><div class="label">книги</div></div>
+      <div class="home-stat"><div class="num">30+</div><div class="label">слайдов</div></div>
+      <div class="home-stat"><div class="num">20+</div><div class="label">тем</div></div>
+      <div class="home-stat"><div class="num">60+</div><div class="label">ответов</div></div>
+    </div>
+
+    <div class="section-label">Быстрый доступ</div>
+    <div class="cards-grid">
+      <div class="card" onclick="openBook('kehoe')">
+        <span class="icon">🧠</span>
+        <h3>Подсознание может всё</h3>
+        <p>Джон Кехо</p>
+        <span class="card-meta">10 слайдов →</span>
+      </div>
+      <div class="card" onclick="openBook('clear')">
+        <span class="icon">🔁</span>
+        <h3>Атомные привычки</h3>
+        <p>Джеймс Клир</p>
+        <span class="card-meta">8 слайдов →</span>
+      </div>
+      <div class="card" onclick="openBook('proctor')">
+        <span class="icon">⚡</span>
+        <h3>Изменить мышление</h3>
+        <p>Боб Проктор</p>
+        <span class="card-meta">12 слайдов →</span>
+      </div>
+      <div class="card" onclick="go('themes')">
+        <span class="icon">💡</span>
+        <h3>Все темы</h3>
+        <p>Подсознание, вибрация, цели, деньги…</p>
+        <span class="card-meta">20+ тем →</span>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <b>О проекте:</b> Холст — образовательная энциклопедия, объединяющая идеи популярной психологии,
+      НЛП и эзотерики. Все материалы цитируются в образовательных целях. Сайт не заменяет консультацию
+      специалиста и не является научно подтверждённым методом.
+    </div>
+  </div>
+
+  <!-- ================= BOOKS ================= -->
+  <div class="view" id="view-books">
+    <h1 class="page-title">Библиотека <span>книг</span></h1>
+    <p class="page-desc">Каждая книга — отдельный путь. Выбери, что читать сейчас.</p>
+    <div class="cards-grid" id="booksGrid"></div>
+  </div>
+
+  <!-- ================= BOOK VIEW ================= -->
+  <div class="view" id="view-bookView">
+    <button class="back-btn" onclick="go('books')">← К списку книг</button>
+    <h1 class="page-title" id="bookTitle"></h1>
+    <p class="page-desc" id="bookAuthor"></p>
+
+    <div class="slider-wrap" id="bookSlider"></div>
+    <div class="slider-nav">
+      <button class="slider-arrow" onclick="prevBookSlide()">‹</button>
+      <div class="slider-nav-center">
+        <div class="slide-counter" id="counter-book">1 / 1</div>
+        <div class="slider-dots" id="dots-book"></div>
+      </div>
+      <button class="slider-arrow" onclick="nextBookSlide()">›</button>
+    </div>
+
+    <div class="disclaimer" id="bookDisclaimer" style="margin-top:24px"></div>
+  </div>
+
+  <!-- ================= THEMES ================= -->
+  <div class="view" id="view-themes">
+    <h1 class="page-title">Темы <span>и идеи</span></h1>
+    <p class="page-desc">Сквозные концепции — что говорят все авторы об одном и том же.</p>
+    <div id="themesList"></div>
+  </div>
+
+  <!-- ================= LAWS ================= -->
+  <div class="view" id="view-laws">
+    <h1 class="page-title">Законы <span>Вселенной</span></h1>
+    <p class="page-desc">Семь герметических законов и закон вибрации Боба Проктора.</p>
+
+    <div class="slider-wrap" id="lawsSlider"></div>
+    <div class="slider-nav">
+      <button class="slider-arrow" onclick="prevLawsSlide()">‹</button>
+      <div class="slider-nav-center">
+        <div class="slide-counter" id="counter-laws">1 / 1</div>
+        <div class="slider-dots" id="dots-laws"></div>
+      </div>
+      <button class="slider-arrow" onclick="nextLawsSlide()">›</button>
+    </div>
+  </div>
+
+  <!-- ================= AUTHORS ================= -->
+  <div class="view" id="view-authors">
+    <h1 class="page-title">Авторы</h1>
+    <p class="page-desc">Ключевые фигуры движения саморазвития.</p>
+    <div class="cards-grid" id="authorsGrid"></div>
+  </div>
+
+  <!-- ================= ARTICLE ================= -->
+  <div class="view" id="view-article">
+    <button class="back-btn" onclick="go('authors')">← К авторам</button>
+    <div class="article-body" id="articleBody"></div>
+  </div>
+
+  <!-- ================= SEARCH ================= -->
+  <div class="view" id="view-search">
+    <h1 class="page-title">Поиск <span>по всему</span></h1>
+    <p class="page-desc">Ищи по книгам, темам, законам, ответам Оракула.</p>
+    <input class="search-input" id="searchInput" placeholder="Начни печатать..." oninput="performSearch(this.value)">
+    <div id="searchResults"></div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   КНИГИ
+   ============================================================ */
+const BOOKS = {
+  kehoe: {
+    title: 'Подсознание может всё!',
+    author: 'Джон Кехо',
+    icon: '🧠',
+    desc: 'Метод пробуждения интуиции и получения ответов от подсознания.',
+    disclaimer: '<b>Источник:</b> Джон Кехо, «Подсознание может всё!». Приведены ключевые идеи и краткие цитаты в образовательных целях.',
+    slides: [
+      {
+        tag: 'Введение',
+        title: 'Кто такой Джон Кехо',
+        text: 'В 1975 году Кехо ушёл жить в леса, чтобы три года изучать механизмы работы мозга. В 1978 начал обучать людей, к 1980 его лекции пользовались успехом во всём мире. За двадцать лет он обучил более 10 000 человек.',
+        highlight: '«Управлять силами Вселенной и активно работать над осуществлением своих целей — очень заманчиво».'
+      },
+      {
+        tag: 'Глава 1',
+        title: 'Вселенная — единая сеть энергии',
+        text: 'Современная физика рассматривает Вселенную как безграничную неделимую сеть динамической активности. Частицы — это пучки энергии, а не твёрдое «вещество». Всё взаимосвязано.',
+        highlight: '«Когда срывают травинку, вздрагивает вся Вселенная» — Упанишады.'
+      },
+      {
+        tag: 'Глава 1',
+        title: 'Голографическая Вселенная',
+        text: 'Дэвид Бом (физик) и Карл Прайбрам (нейрофизиолог) независимо пришли к выводу: реальность — голограмма, и мозг работает по голографическому принципу. Каждая часть содержит целое.',
+        highlight: 'Мозг — это голограмма, отражающая голографическую Вселенную.'
+      },
+      {
+        tag: 'Глава 1',
+        title: 'Сознание влияет на материю',
+        text: 'В 1979 году Роберт Джан из Принстона запустил программу по изучению роли сознания в формировании реальности. Тысячи экспериментов показали: мозг может напрямую влиять на материальную действительность.',
+        highlight: 'Сознание — энергия в её тончайшей и наиболее динамичной форме.'
+      },
+      {
+        tag: 'Глава 2',
+        title: 'Две реальности',
+        text: 'Мы живём одновременно в двух мирах: внутреннем (мысли, чувства, взгляды) и внешнем (люди, места, вещи, события). Не разделяя их, мы позволяем внешнему господствовать.',
+        highlight: 'Внутреннее сознание — главная и наиважнейшая часть вашей сущности.'
+      },
+      {
+        tag: 'Глава 2',
+        title: 'Мысль стремится стать формой',
+        text: 'Мысль — это энергия в быстрой, лёгкой и подвижной форме. Она постоянно стремится обрести форму, тяготеет к внешнему проявлению. Обычные мысли подобны искрам костра — быстро исчезают.',
+        highlight: 'Стремление и способность материализоваться заложены в природе мысли.'
+      },
+      {
+        tag: 'Глава 2',
+        title: 'Сила повторения',
+        text: 'Единичная мысль не обладает большой силой. Но многократно повторяя её, можно сконцентрировать и направить, увеличить её силу. Как увеличительное стекло: закрепил — свет вызывает возгорание.',
+        highlight: 'Слабые и разрозненные мысли — слабые силы. Сильные и сконцентрированные — сильные силы.'
+      },
+      {
+        tag: 'Глава 2',
+        title: 'Энергетическая бухгалтерия Вселенной',
+        text: 'Каждая мысль отражается в системе и воздействует на неё. Если бы за каждую мысль приходилось получать или отдавать доллар, все стали бы скрупулёзно контролировать свои мысли.',
+        highlight: 'Хотите вы этого или нет, но, размышляя, вы всё время создаёте собственную реальность.'
+      },
+      {
+        tag: 'Глава 2',
+        title: 'Первый шаг',
+        text: 'Первый шаг к новой жизни прост: следить за течением своих мыслей и направлять их. Недостаточно просто напряжённо работать по 12–15 часов. Чтобы сдвинуться с места, необходимо изменить свой образ мыслей.',
+        highlight: 'Новое сознание должно идти впереди. Окружающая действительность изменится только после этого.'
+      },
+      {
+        tag: 'Глава 2',
+        title: 'Сознание успеха',
+        text: 'Хотите изменить обстоятельства — развивайте нужный тип сознания. Преуспевающий человек обладает сознанием успеха. Обеспеченный — сознанием богатства. Единственное, что мешает вам — это ваши мысли.',
+        highlight: '«Всякому имущему дано будет, а у неимущего отнимется и то, что имеет» (Лк. 19:26).'
+      }
+    ]
+  },
+
+  clear: {
+    title: 'Атомные привычки',
+    author: 'Джеймс Клир',
+    icon: '🔁',
+    desc: 'Как приобрести хорошие привычки и избавиться от плохих.',
+    disclaimer: '<b>Источник:</b> Джеймс Клир, «Атомные привычки». Приведены ключевые идеи и краткие цитаты в образовательных целях.',
+    slides: [
+      {
+        tag: 'Введение',
+        title: 'Моя история',
+        text: 'В последний день второго года старшей школы Джеймс Клир получил удар бейсбольной битой по лицу. Нос сломан в двух местах, несколько трещин в черепе, отёк мозга. На следующее утро он не мог вспомнить имя матери, а его организм перестал справляться с глотанием и дыханием.',
+        highlight: '«За какую-то долю секунды я получил сломанный нос, несколько трещин в черепе и переломы обеих глазниц».'
+      },
+      {
+        tag: 'Введение',
+        title: 'Искусственная кома',
+        text: 'Из-за нарастающего отёка мозга у Клира случились несколько посттравматических припадков. После третьего его ввели в искусственную кому и подключили к аппарату ИВЛ. Родители уже были в этой больнице десять лет назад — тогда с лейкемией у его младшей сестры.',
+        highlight: '«Когда день перешёл в ночь, мою жизнь поддерживали только приборы».'
+      },
+      {
+        tag: 'Введение',
+        title: 'Восстановление',
+        text: 'На следующее утро дыхание восстановилось, и врачи вывели его из комы. Обоняние пропало — но вернулось. Однако резкий выдох через нос вытолкнул левый глаз из глазницы: тот держался только за счёт века и зрительного нерва.',
+        highlight: '«Я выглядел так, как будто неудачно поучаствовал в боксёрском поединке».'
+      },
+      {
+        tag: 'Введение',
+        title: 'Месяцы реабилитации',
+        text: 'Несколько недель двоилось в глазах — нельзя было сконцентрироваться. Глаз вернулся на место через месяц. Водить автомобиль Клир смог только через 8 месяцев. На лечебной физкультуре заново учился ходить по прямой.',
+        highlight: '«Я был полон решимости не позволить травме сломить меня, но на пути было много ситуаций отчаяния».'
+      },
+      {
+        tag: 'Введение',
+        title: 'Что помогло ему выжить',
+        text: 'Именно привычки и маленькие, но регулярные действия помогли Клиру восстановиться. Когда хочешь изменить жизнь, не нужны грандиозные цели. Нужны «атомные» изменения — маленькие, но повторяющиеся.',
+        highlight: '«Атомные привычки — маленькие изменения, в которых скрыта огромная мощь!»'
+      },
+      {
+        tag: 'Введение',
+        title: 'Эффект сложного процента',
+        text: 'Может ли одна монетка сделать человека богатым? Нет. Но если добавить ещё одну? И ещё? В какой-то момент количество переходит в качество. То же с привычками: маленькое регулярное действие приводит к большим результатам.',
+        highlight: '«Срабатывает эффект сложного процента».'
+      },
+      {
+        tag: 'Введение',
+        title: 'Виноваты не вы, а система',
+        text: 'Многие годами пытаются измениться, но не получается. Клир говорит: не корите себя — виновата не сила воли, а система. Он развенчивает мифы о мотивации и объясняет, как сделать хорошие привычки неизбежными, а вредные — невозможными.',
+        highlight: '«Вы давно пытаетесь измениться, но не получается. Не корите себя! Виноваты не вы, а система».'
+      },
+      {
+        tag: 'Структура книги',
+        title: 'Четыре закона',
+        text: 'Вся книга построена вокруг четырёх законов изменения поведения: сделать привычку очевидной, привлекательной, лёгкой и приносящей удовлетворение. Каждому закону посвящён отдельный раздел книги.',
+        highlight: '«Сделать хорошие привычки неизбежными, а вредные — невозможными. Без вариантов!»'
+      }
+    ]
+  },
+
+  proctor: {
+    title: 'Изменить мышление — изменить жизнь',
+    author: 'Боб Проктор',
+    icon: '⚡',
+    desc: 'Парадигмы, закон вибрации и мышление с конца.',
+    disclaimer: '<b>Источник:</b> Боб Проктор, «Изменить мышление — изменить жизнь». Приведены ключевые идеи и краткие цитаты в образовательных целях.',
+    slides: [
+      {
+        tag: 'Введение',
+        title: 'Кто такой Боб Проктор',
+        text: 'Боб Проктор — легенда мотивационной сферы, автор бестселлера «Вы были рождены богатыми», участник фильма «Секрет». В 1961 году его годовой доход составлял 4000 долларов, а долги — 6000. Через пять лет он зарабатывал свыше миллиона в год.',
+        highlight: '«Успех любого предприятия целиком и полностью зависит от происходящего в наших умах, и он никоим образом не связан с внешними обстоятельствами».'
+      },
+      {
+        tag: 'Глава 1',
+        title: 'Что такое парадигма',
+        text: 'Парадигма — это ментальная программа, встроенная в подсознание и практически полностью контролирующая ваше привычное поведение. Парадигма есть множество привычек, прочно пустивших корни в подсознании.',
+        highlight: '«Парадигма контролирует абсолютно все сферы нашей жизни».'
+      },
+      {
+        tag: 'Глава 1',
+        title: 'Как формируется парадигма',
+        text: 'Парадигма выстраивалась за счёт повторения — регулярного повторения через равные промежутки времени. Именно повторение подлежит изменению. «Перечитывая хорошую книгу во второй раз, вы не открываете в ней чего-то, чего в ней раньше не было. Вы открываете в себе то, чего в вас раньше было».',
+        highlight: '«Повторение ведёт к осознанности».'
+      },
+      {
+        tag: 'Глава 1',
+        title: 'Бессознательная компетентность',
+        text: 'Многие успешные люди не могут объяснить, почему они добились успеха. Они неосознанно компетентны. Их поведение подчиняется парадигмам, а не имеющейся информации. Они занимаются не тем, в чём разбираются. И по странной причине не догадываются об этом.',
+        highlight: '«Большинство успешных людей отличаются неосознанной компетентностью».'
+      },
+      {
+        tag: 'Глава 1',
+        title: 'Парадигма как термостат',
+        text: 'Парадигма контролирует температуру индивидуальной производительности. Если вы хотите изменить температуру производительности сотрудников, вам предстоит изменить парадигму. Вам придётся изменить термостат, а для этого необходимо понять его.',
+        highlight: '«Парадигма как термостат: она контролирует температуру индивидуальной производительности».'
+      },
+      {
+        tag: 'Глава 1',
+        title: 'Закон вибрации',
+        text: 'Закон притяжения — второстепенный. Главенствующий закон — закон вибрации. Всё вокруг пребывает в движении. Мы живём в океане эмоций и думаем на частоте. Мысль есть энергия. Частота, на которой вы думаете, определяет, что вы притягиваете к себе.',
+        highlight: '«Нельзя привлечь то, с чем вы не находитесь в гармонии».'
+      },
+      {
+        tag: 'Глава 2',
+        title: 'Цели типа A, B и C',
+        text: 'A — знаете как. B — знаете при условиях. C — не знаете как, но очень хотите. Настоящий рост — в целях типа C. Страстное истинное желание — единственная предпосылка для вашей цели. Желания появляются из самой нашей сути, совершенства внутри нас.',
+        highlight: '«Страстное истинное желание — вот единственная предпосылка для вашей цели».'
+      },
+      {
+        tag: 'Глава 2',
+        title: 'Мышление с конца',
+        text: 'Невилл называл этот принцип «волевое воображение». Думать с конца — это начало всех чудес. Вы не работаете над этим, а просто идёте туда, где уже мысленно находитесь, и эмоционально включаетесь. И тогда реализация желаемого на физическом уровне остаётся лишь вопросом времени.',
+        highlight: '«Будущее должно стать настоящим в воображении того, кто мудро и осознанно создаёт обстоятельства».'
+      },
+      {
+        tag: 'Глава 2',
+        title: 'Созидание либо распад',
+        text: 'Основной закон жизни гласит: «Созидание либо распад». Если вы не идёте вперёд, вы движетесь назад. Нарушение закона есть грех. Действуя в соответствии с законом, вы идёте вперёд. Если вам приходится бороться изо всех сил, значит, вы, вероятнее всего, нарушаете закон.',
+        highlight: '«Если все складывается будто бы само собой, значит, вы действуете правильно».'
+      },
+      {
+        tag: 'Глава 3',
+        title: 'Уверенность и тирания «других людей»',
+        text: 'Уверенность приходит со знаниями. Когда люди жалуются на отсутствие уверенности, это не так — они уверены, что могут одеться, завязать шнурки, вести машину. Если не хватает уверенности сделать что-то, значит, они просто не знают как. Чем больше вы узнаёте как, тем увереннее становитесь.',
+        highlight: '«Если бы ты знал, как мало думают другие люди, тебя бы не волновало, что они думают» — Эрл Найтингейл.'
+      },
+      {
+        tag: 'Глава 3',
+        title: 'Деньги как необходимый продукт',
+        text: 'Не всякий захочет владеть миллионным состоянием, но всякий должен обеспечить себе стабильное финансовое положение. Деньги — необходимый продукт. Богатые люди имеют несколько источников дохода. Если у вас есть работа, у вас один источник.',
+        highlight: '«У богатых людей таких источников много».'
+      },
+      {
+        tag: 'Глава 4',
+        title: 'Понимание парадигмы',
+        text: 'Решение во многом кроется в дисциплинированности — способности выполнять собственные приказы. Но чтобы культивировать дисциплинированность, нужно понять, с чем приходится работать. Разобраться, что собой представляет парадигма и как она устроена.',
+        highlight: '«Понимание того, как контролирует нас парадигма, кардинально меняет ход игры».'
+      }
+    ]
+  }
+};
+
+/* ============================================================
+   ТЕМЫ (СКВОЗНЫЕ)
+   ============================================================ */
+const THEMES = [
+  {
+    id: 'subconscious',
+    icon: '🧠',
+    title: 'Подсознание',
+    subtitle: 'Главная программа, которая управляет жизнью',
+    blocks: [
+      { author: 'Джон Кехо', text: 'Подсознание отыщет ответы на любой вопрос — нужно лишь правильно к нему обратиться. Три шага: поверить, что ответ существует, сформулировать запрос, расслабиться и ждать.' },
+      { author: 'Боб Проктор', text: 'Подсознание подобно земле: что посадишь — то и вырастет. Оно не различает плохое и хорошее, а лишь принимает и взращивает. Именно там живёт парадигма.' },
+      { author: 'Джеймс Клир', text: 'Привычки хранятся в подсознании. Изменить их усилием воли почти невозможно — нужно перестроить систему, в которой они укоренились.' }
+    ]
+  },
+  {
+    id: 'paradigm',
+    icon: '⚙️',
+    title: 'Парадигма',
+    subtitle: 'Ментальная программа, которая определяет результаты',
+    blocks: [
+      { author: 'Боб Проктор', text: 'Парадигма — это множество привычек, прочно пустивших корни в подсознании. Она контролирует абсолютно все сферы жизни. Хотите изменить результаты — меняйте парадигму, а не поведение.' },
+      { author: 'Джон Кехо', text: 'Сознание можно перенастроить через повторение и визуализацию. Сначала новое сознание, потом действительность — но не наоборот.' },
+      { author: 'Джеймс Клир', text: 'Вы давно пытаетесь измениться, но не получается. Не корите себя — виновата не сила воли, а система. Парадигма не даёт вам вырваться.' }
+    ]
+  },
+  {
+    id: 'vibration',
+    icon: '⚡',
+    title: 'Закон вибрации',
+    subtitle: 'Мысль — это энергия, которая притягивает подобное',
+    blocks: [
+      { author: 'Боб Проктор', text: 'Закон притяжения — второстепенный. Главенствующий закон — закон вибрации. Всё вокруг пребывает в движении. Частота, на которой вы думаете, определяет, что вы притягиваете к себе.' },
+      { author: 'Джон Кехо', text: 'Мысль — это энергия в быстрой, лёгкой и подвижной форме. Она постоянно стремится обрести форму. Стремление и способность материализоваться заложены в её природе.' },
+      { author: 'Герметизм', text: 'Всё есть энергия, всё вибрирует. Разница между вещами — лишь разница в частоте вибрации.' }
+    ]
+  },
+  {
+    id: 'habits',
+    icon: '🔁',
+    title: 'Привычки',
+    subtitle: 'Атомы поведения, из которых складывается жизнь',
+    blocks: [
+      { author: 'Джеймс Клир', text: 'Успех — это результат множества мелких повторяющихся действий, а не редких грандиозных усилий. Сосредоточьтесь на системе, а не на цели. Четыре закона: очевидность, привлекательность, лёгкость, удовлетворение.' },
+      { author: 'Боб Проктор', text: 'Привычка — это идея, которая проявляется без участия сознательной мысли. Вы просто действуете механически. Так работает парадигма.' },
+      { author: 'Джон Кехо', text: 'Чем больше число повторений, тем большую силу и способность к выражению приобретает мысль. Слабые и разрозненные мысли — слабые силы.' }
+    ]
+  },
+  {
+    id: 'goals',
+    icon: '🎯',
+    title: 'Цели',
+    subtitle: 'От A до C — как выбрать то, что даст рост',
+    blocks: [
+      { author: 'Боб Проктор', text: 'Цели типа A — знаете как. Типа B — знаете при условиях. Типа C — не знаете как, но очень хотите. Настоящий рост — в целях типа C. Страстное истинное желание — единственная предпосылка.' },
+      { author: 'Джеймс Клир', text: 'Цели — это хорошо, но система важнее. Не «я хочу пробежать марафон», а «я тот, кто бегает каждый день».' },
+      { author: 'Джон Кехо', text: 'Хотите изменить обстоятельства — развивайте нужный тип сознания. Окружающая действительность изменится только после этого. Новое сознание должно идти впереди.' }
+    ]
+  },
+  {
+    id: 'money',
+    icon: '💰',
+    title: 'Деньги',
+    subtitle: 'Не цель, а необходимый продукт',
+    blocks: [
+      { author: 'Боб Проктор', text: 'Деньги — необходимый продукт. Богатые люди имеют несколько источников дохода. Если у вас есть работа, у вас один источник. Мне всё равно, насколько вы хороши, — у вас один источник.' },
+      { author: 'Джон Кехо', text: 'Финансовое процветание — не цель, а следствие правильного мышления. Настройте сознание на достаток — и он придёт.' },
+      { author: 'Джеймс Клир', text: 'Богатство — это результат привычек. Не «заработать миллион», а «откладывать 10% каждый месяц». Маленькие шаги, сложный процент.' }
+    ]
+  },
+  {
+    id: 'fear',
+    icon: '🌊',
+    title: 'Страх и тревога',
+    subtitle: 'Что мешает действовать и как это преодолеть',
+    blocks: [
+      { author: 'Боб Проктор', text: 'Страх вызван невежеством, сомнениями и беспокойством. Понимание, которое приходит через учение, ведёт к вере — противоположности страха. Вера проявляется в благоденствии.' },
+      { author: 'Джон Кехо', text: 'Единственное, что вам мешает и не даёт добиться успеха — это ваши мысли. Не обстоятельства, а именно мысли.' },
+      { author: 'Джеймс Клир', text: 'Не корите себя — виновата не сила воли, а система. Сделайте шаг маленьким и очевидным, и страх отступит.' }
+    ]
+  },
+  {
+    id: 'confidence',
+    icon: '💪',
+    title: 'Уверенность',
+    subtitle: 'Приходит со знаниями, а не с мотивацией',
+    blocks: [
+      { author: 'Боб Проктор', text: 'Уверенность приходит со знаниями. Если не хватает уверенности — значит, вы просто не знаете как. Чем больше узнаёте как, тем увереннее становитесь.' },
+      { author: 'Джон Кехо', text: 'Поверьте, что ответ существует, — и подсознание отыщет его. Вера — это колебания энергии, притягивающие решения.' },
+      { author: 'Джеймс Клир', text: 'Идентичность важнее цели. Начните действовать как человек, которым хотите стать, — и уверенность придёт через действие.' }
+    ]
+  },
+  {
+    id: 'visualization',
+    icon: '✨',
+    title: 'Визуализация',
+    subtitle: 'Не мечтание, а творческий процесс',
+    blocks: [
+      { author: 'Боб Проктор', text: 'Мышление с конца — волевое воображение. Вы не работаете над достижением цели, а просто идёте туда, где уже мысленно находитесь, и эмоционально включаетесь. Реализация — лишь вопрос времени.' },
+      { author: 'Джон Кехо', text: 'Визуализация — это не просто ненужное мечтание, а творческий процесс, помогающий контролировать энергетические потоки. Мысленные образы влияют на реальные события.' },
+      { author: 'Герметизм', text: 'Вселенная — ментальное создание. То, что мы думаем, влияет на реальность. Как наверху, так и внизу.' }
+    ]
+  },
+  {
+    id: 'repetition',
+    icon: '🔄',
+    title: 'Сила повторения',
+    subtitle: 'Как формируется и меняется парадигма',
+    blocks: [
+      { author: 'Джон Кехо', text: 'Единичная мысль — как искра. Но многократно повторяя, её можно сконцентрировать и направить. Как увеличительное стекло: закрепил — свет вызывает возгорание.' },
+      { author: 'Боб Проктор', text: 'Парадигма формировалась повторением — и меняется только повторением. Читайте одну и ту же книгу. Слушайте одну и ту же запись. Повторение ведёт к осознанности.' },
+      { author: 'Джеймс Клир', text: 'Привычка — это повторение, ставшее автоматическим. Каждое повторение укрепляет нейронную связь. Вот почему важна система, а не вспышки мотивации.' }
+    ]
+  },
+  {
+    id: 'identity',
+    icon: '👤',
+    title: 'Идентичность',
+    subtitle: 'Не что делать, а кем быть',
+    blocks: [
+      { author: 'Джеймс Клир', text: 'Настоящее изменение поведения — это изменение идентичности. Не «я хочу бросить курить», а «я не курящий». Привычки — доказательства вашей новой идентичности.' },
+      { author: 'Боб Проктор', text: 'Парадигма — это ваш взгляд на самих себя, окружающий мир и возможности. Она отражает ваше отношение к переменам и трудностям. Измените взгляд — изменится всё.' },
+      { author: 'Джон Кехо', text: 'Вы — не то, что вы думаете, а то, что пропускаете через себя. Мысли должны быть заряжены эмоциями, иначе они не принесут пользы.' }
+    ]
+  },
+  {
+    id: 'nlp',
+    icon: '🗣️',
+    title: 'НЛП',
+    subtitle: 'Работа с подсознанием через язык и образы',
+    blocks: [
+      { author: 'НЛП', text: 'Рефрейминг: погрузитесь в расслабленное состояние, спросите у подсознания: «Какая часть меня создала этот недостаток?» Первый ответ — правильный. Затем установите контакт с этой частью.' },
+      { author: 'НЛП', text: 'Ответы подсознания могут приходить не словами, а картинками, внутренним голосом или телесными ощущениями. Не игнорируйте их.' },
+      { author: 'Синтез', text: 'Подсознание готово к диалогу, если обратиться к нему с уважением и вниманием. Это объединяет подходы Кехо и НЛП.' }
+    ]
+  }
+];
+
+/* ============================================================
+   ЗАКОНЫ
+   ============================================================ */
+const LAWS = [
+  { tag: 'Герметизм', title: '1. Закон ментализма', text: '«Все взаимосвязано». Вселенная — это ментальное создание, а мысль первична. То, что мы думаем, влияет на реальность.', highlight: '«Как наверху, так и внизу».' },
+  { tag: 'Герметизм', title: '2. Закон соответствия', text: '«Как внутри — так и снаружи». Внутреннее состояние человека отражается в его внешней жизни.', highlight: 'Внешний мир — зеркало внутреннего.' },
+  { tag: 'Герметизм', title: '3. Закон кармы', text: '«Всё имеет причину и следствие». Каждое действие возвращается. Причина и следствие неразрывны.', highlight: 'Что посеешь, то и пожнёшь.' },
+  { tag: 'Герметизм', title: '4. Закон вибраций', text: '«Всё есть энергия». Всё в мире находится в движении и вибрации. Мысли и эмоции имеют свою частоту.', highlight: 'Повышая вибрацию, вы меняете реальность.' },
+  { tag: 'Герметизм', title: '5. Закон ритма', text: '«Приливы и отливы». Всё движется циклами. За подъёмом следует спад, за спадом — подъём.', highlight: 'Ритм — основа равновесия.' },
+  { tag: 'Герметизм', title: '6. Закон полярности', text: '«Всё двойственно». У каждой вещи есть противоположность, и они — две крайности одного целого.', highlight: 'Полярность помогает понять целое.' },
+  { tag: 'Герметизм', title: '7. Закон пола', text: '«Баланс плюса и минуса». Мужское и женское начала существуют во всём. Их баланс — источник творения.', highlight: 'Гармония противоположностей порождает движение.' },
+  { tag: 'Проктор', title: 'Созидание либо распад', text: 'Основной закон жизни: если вы не идёте вперёд, вы движетесь назад. Нарушение закона есть грех.', highlight: '«Если все складывается само собой — вы действуете правильно».' }
+];
+
+/* ============================================================
+   АВТОРЫ
+   ============================================================ */
+const AUTHORS = [
+  { id: 'kehoe', icon: '🧠', name: 'Джон Кехо', desc: 'Автор книги «Подсознание может всё». Учил людей использовать силу подсознания для достижения целей.' },
+  { id: 'proctor', icon: '⚡', name: 'Боб Проктор', desc: 'Легенда мотивации. Изучал парадигмы, закон вибрации и мышление с конца.' },
+  { id: 'clear', icon: '🔁', name: 'Джеймс Клир', desc: 'Автор «Атомных привычек». Учит маленьким шагам и системе вместо целей.' }
+];
+
+const ARTICLES = {
+  kehoe: {
+    title: 'Джон Кехо: Подсознание может всё',
+    body: `
+      <h3>Кто такой Джон Кехо</h3>
+      <p>Автор книги «Подсознание может всё!», один из популяризаторов идей о силе подсознания. В 1975 году ушёл жить в леса, чтобы три года изучать механизмы работы мозга. В 1978 начал обучать людей.</p>
+      <h3>Три шага к ответу от подсознания</h3>
+      <p>1. Поверьте, что ответ существует, и вы обладаете мощным подсознанием.<br>2. Сформулируйте, какие ответы хотите получить.<br>3. Расслабьтесь и наполните мозг уверенностью, что ответ откроется.</p>
+      <blockquote>«Вера и уверенность — это колебания энергии, которые притягивают решения».</blockquote>
+      <h3>Ключевая идея</h3>
+      <p>Мысль — это энергия, которая постоянно стремится обрести форму. Многократное повторение делает её сильнее. Всё, о чём вы думаете, влияет на вашу реальность.</p>
+    `
+  },
+  proctor: {
+    title: 'Боб Проктор: Парадигмы и закон вибрации',
+    body: `
+      <h3>Кто такой Боб Проктор</h3>
+      <p>Легенда мотивационной сферы, участник фильма «Секрет». В 1961 году зарабатывал 4000 долларов в год при долгах 6000. Через пять лет — свыше миллиона в год.</p>
+      <h3>Парадигма</h3>
+      <p>Ментальная программа в подсознании, которая управляет всем поведением. Хотите изменить результаты — меняйте парадигму, а не поведение.</p>
+      <blockquote>«Парадигма контролирует абсолютно все сферы нашей жизни».</blockquote>
+      <h3>Закон вибрации</h3>
+      <p>Главный закон. Мысль — это энергия, которая вибрирует на определённой частоте. Эта частота притягивает соответствующие события.</p>
+      <h3>Мышление с конца</h3>
+      <p>Невилл называл это «волевое воображение». Живите так, будто цель уже достигнута, и эмоционально вовлекайтесь. Реализация — вопрос времени.</p>
+    `
+  },
+  clear: {
+    title: 'Джеймс Клир: Атомные привычки',
+    body: `
+      <h3>Кто такой Джеймс Клир</h3>
+      <p>Автор бестселлера «Атомные привычки». В последний день старшей школы получил удар битой по лицу — сломанный нос, трещины в черепе, кома. Восстановление заняло месяцы.</p>
+      <h3>Главная идея</h3>
+      <p>Успех — это результат множества мелких действий, а не редких грандиозных усилий. Сосредоточьтесь на системе, а не на цели.</p>
+      <blockquote>«Виноваты не вы, а система».</blockquote>
+      <h3>Четыре закона изменения поведения</h3>
+      <p>1. Очевидность. 2. Привлекательность. 3. Лёгкость. 4. Удовлетворение. Цель — сделать хорошие привычки неизбежными, а вредные — невозможными.</p>
+    `
+  }
+};
+
+/* ============================================================
+   БАЗА ЗНАНИЙ ОРАКУЛА
+   ============================================================ */
+const KNOWLEDGE_BASE = [
+  {
+    keys: ['парадигм', 'программа подсознан', 'привычки корни', 'почему не меняется'],
+    question: 'Что такое парадигма и почему я не могу измениться?',
+    answer: 'Парадигма — это ментальная программа, встроенная в подсознание. По Бобу Проктору, парадигма есть множество привычек, прочно пустивших корни в подсознании. Она контролирует абсолютно все сферы жизни. Вы пытаетесь изменить поведение, а нужно менять саму программу. Хотите изменить результаты — меняйте парадигму.',
+    source: 'Боб Проктор · Изменить мышление — изменить жизнь',
+    related: [{ type: 'book', id: 'proctor' }, { type: 'theme', id: 'paradigm' }]
+  },
+  {
+    keys: ['закон вибрации', 'частота', 'вибриру', 'притягива', 'почему не притягивается'],
+    question: 'Как работает закон вибрации и почему желания не исполняются?',
+    answer: 'Проктор утверждает: закон притяжения — второстепенный. Главенствующий закон — закон вибрации. Всё вокруг пребывает в движении. Мысль есть энергия. Частота, на которой вы думаете, определяет, что вы притягиваете к себе. Нельзя привлечь то, с чем вы не находитесь в гармонии. Если вы бедны, но думаете о богатстве на сознательном уровне, — вы всё равно остаётесь в вибрации бедности. Нужно не думать о богатстве, а почувствовать себя богатым.',
+    source: 'Боб Проктор · Закон вибрации',
+    related: [{ type: 'book', id: 'proctor' }, { type: 'theme', id: 'vibration' }]
+  },
+  {
+    keys: ['подсознан', 'кехо', 'интуиц', 'как услышать', 'внутренний голос'],
+    question: 'Как работает подсознание и как его услышать?',
+    answer: 'Джон Кехо предлагает три шага: 1) Поверьте, что абсолютно правильные ответы существуют и ваше подсознание отыщет их. 2) Чётко сформулируйте, какие ответы хотите получить, и повторяйте: «Сейчас моё подсознание подсказывает мне...». 3) Расслабьтесь и наполните мозг уверенностью, что ответ откроется. Вера — это колебания энергии, притягивающие решения.',
+    source: 'Джон Кехо · Подсознание может всё',
+    related: [{ type: 'book', id: 'kehoe' }, { type: 'theme', id: 'subconscious' }]
+  },
+  {
+    keys: ['привычк', 'клир', 'атомн', 'как изменить привычку', 'как бросить'],
+    question: 'Почему я не могу изменить привычку и как это сделать?',
+    answer: 'Клир категоричен: «Вы давно пытаетесь измениться, но не получается. Не корите себя! Виноваты не вы, а система». Он развенчивает мифы о мотивации и силе воли. Сделайте привычку очевидной, привлекательной, лёгкой и приносящей удовлетворение. И помните: успех — это результат мелких повторяющихся действий, а не редких усилий.',
+    source: 'Джеймс Клир · Атомные привычки',
+    related: [{ type: 'book', id: 'clear' }, { type: 'theme', id: 'habits' }]
+  },
+  {
+    keys: ['цель', 'цели типа', 'цель c', 'как найти цель', 'предназначен'],
+    question: 'Как найти свою цель и чем отличаются цели A, B и C?',
+    answer: 'Проктор делит цели на три типа. A — знаете как. B — знаете при условиях. C — не знаете как, но очень хотите. Настоящий рост — в целях типа C. Страстное истинное желание — единственная предпосылка для вашей цели. Чтобы найти её, каждое утро спрашивайте себя: «Чем мне нравится заниматься?» И помните: цель — это причина, по которой вы встаёте утром.',
+    source: 'Боб Проктор · Цели типа A, B, C',
+    related: [{ type: 'book', id: 'proctor' }, { type: 'theme', id: 'goals' }]
+  },
+  {
+    keys: ['мышление с конца', 'волевое воображение', 'невилл', 'как визуализ', 'перемотка'],
+    question: 'Что такое мышление с конца и как правильно визуализировать?',
+    answer: 'Невилл называл это «волевое воображение». Думать с конца — это начало всех чудес. Вы не работаете над достижением, а просто идёте туда, где уже мысленно находитесь, и эмоционально включаетесь. Живите в настоящем: в одну секунду мысленно видите желаемое, в другую — эмоционально вовлекаетесь. Реализация на физическом уровне — лишь вопрос времени.',
+    source: 'Боб Проктор · Мышление с конца',
+    related: [{ type: 'theme', id: 'visualization' }, { type: 'book', id: 'proctor' }]
+  },
+  {
+    keys: ['деньги', 'богатств', 'нет денег', 'финанс', 'источники дохода'],
+    question: 'Почему в жизни нет денег и как разбогатеть?',
+    answer: 'Проктор утверждает: деньги — необходимый продукт. Не всякий захочет миллион, но всякий должен обеспечить финансовое положение. Богатые люди имеют несколько источников дохода. Если у вас есть работа, у вас один источник. Также Кехо учит: настройте сознание на достаток. Развивайте сознание богатства — мыслите достатком, а не отсутствием.',
+    source: 'Синтез учений Проктора и Кехо',
+    related: [{ type: 'theme', id: 'money' }, { type: 'book', id: 'proctor' }]
+  },
+  {
+    keys: ['страх', 'тревог', 'сомнен', 'неуверен', 'прокрастин', 'боюсь'],
+    question: 'Как перестать бояться и преодолеть тревогу?',
+    answer: 'Проктор: страх вызван невежеством, сомнениями и беспокойством. Понимание, которое приходит через учение, ведёт к вере — противоположности страха. Вера проявляется в благоденствии. Кехо добавляет: единственное, что мешает вам — это ваши мысли. Клир: не корите себя, начните с крошечного шага. Сделайте привычку лёгкой — и страх отступит.',
+    source: 'Синтез Проктора, Кехо и Клира',
+    related: [{ type: 'theme', id: 'fear' }]
+  },
+  {
+    keys: ['уверенность', 'как поверить в себя', 'самооценк', 'что подумают', 'мнение'],
+    question: 'Как поверить в себя и перестать зависеть от чужого мнения?',
+    answer: 'Проктор: уверенность приходит со знаниями. Когда люди жалуются на отсутствие уверенности, это не так — они уверены, что могут одеться, завязать шнурки, вести машину. Если не хватает уверенности сделать что-то, значит, они просто не знают как. Чем больше узнаёте как — тем увереннее становитесь. И помните: «Если бы ты знал, как мало думают другие люди, тебя бы не волновало, что они думают».',
+    source: 'Боб Проктор · Уверенность',
+    related: [{ type: 'theme', id: 'confidence' }, { type: 'book', id: 'proctor' }]
+  },
+  {
+    keys: ['созидание либо распад', 'вперёд назад', 'напряжен', 'борьба', 'легко'],
+    question: 'Почему всё даётся с таким трудом и что делать?',
+    answer: 'Проктор формулирует основной закон жизни: «Созидание либо распад». Если вы не идёте вперёд, вы движетесь назад. Действуя в соответствии с законом, вы идёте вперёд. Если всё складывается красиво и легко — вы действуете правильно. Если приходится бороться изо всех сил — вы, вероятнее всего, нарушаете закон. Остановитесь и пересмотрите путь.',
+    source: 'Боб Проктор · Созидание либо распад',
+    related: [{ type: 'book', id: 'proctor' }, { type: 'theme', id: 'paradigm' }]
+  },
+  {
+    keys: ['повторен', 'сила повторен', 'увеличительное стекло', 'как закрепить'],
+    question: 'Почему повторение так важно и как оно работает?',
+    answer: 'Кехо: единичная мысль — как искра. Многократно повторяя её, можно сконцентрировать и направить, увеличить силу. Как увеличительное стекло: закрепил — свет вызывает возгорание. Проктор: парадигма формировалась повторением — и меняется только повторением. Читайте одну и ту же книгу, слушайте одну и ту же запись. Повторение ведёт к осознанности.',
+    source: 'Синтез Кехо и Проктора',
+    related: [{ type: 'theme', id: 'repetition' }]
+  },
+  {
+    keys: ['идентичност', 'кем быть', 'кто я', 'новая жизнь'],
+    question: 'Как изменить себя и стать другим человеком?',
+    answer: 'Клир: настоящее изменение поведения — это изменение идентичности. Не «я хочу бросить курить», а «я не курящий». Привычки — доказательства новой идентичности. Проктор: парадигма — это ваш взгляд на самих себя и мир. Измените взгляд — изменится всё. Кехо: вы — не то, что думаете, а то, что пропускаете через себя. Заряжайте мысли эмоциями.',
+    source: 'Синтез Клира, Проктора и Кехо',
+    related: [{ type: 'theme', id: 'identity' }]
+  },
+  {
+    keys: ['нлп', 'рефрейм', 'якор', 'часть меня'],
+    question: 'Что такое НЛП и как работает рефрейминг?',
+    answer: 'НЛП — это набор техник для работы с подсознанием через язык и образы. Рефрейминг: погрузитесь в расслабленное состояние, спросите у подсознания: «Какая часть меня создала этот недостаток?» Первый ответ — правильный. Установите контакт с этой частью, поблагодарите её и спросите: «Согласна ли ты пообщаться?». Ответы могут приходить в картинках, словах или ощущениях.',
+    source: 'НЛП · Рефрейминг',
+    related: [{ type: 'theme', id: 'nlp' }]
+  },
+  {
+    keys: ['закон вселенн', 'герметизм', 'ментализм', 'карм', 'полярн', 'ритм', '7 законов'],
+    question: 'Какие законы Вселенной существуют?',
+    answer: 'Семь герметических законов: 1) Ментализм — всё взаимосвязано. 2) Соответствие — как внутри, так и снаружи. 3) Карма — всё имеет причину и следствие. 4) Вибрации — всё есть энергия. 5) Ритм — приливы и отливы. 6) Полярность — всё двойственно. 7) Пол — баланс плюса и минуса. Проктор также добавляет: созидание либо распад — основной закон жизни.',
+    source: 'Герметизм · Законы вселенной',
+    related: [{ type: 'laws' }]
+  },
+  {
+    keys: ['две реальност', 'внутренний мир', 'внешний мир', 'зеркало'],
+    question: 'Почему внешний мир не меняется?',
+    answer: 'Кехо пишет: мы живём одновременно в двух реальностях — внутренней (мысли, чувства, взгляды) и внешней (люди, места, вещи, события). Не в силах разделить эти миры, мы позволяем видимому внешнему господствовать, отводя внутреннему лишь роль зеркала. Но внутреннее сознание — мощная сила. Измените внутреннее — изменится внешнее.',
+    source: 'Джон Кехо · Глава 2 «Сознание»',
+    related: [{ type: 'book', id: 'kehoe' }, { type: 'theme', id: 'subconscious' }]
+  },
+  {
+    keys: ['голограмм', 'бом', 'прайбрам', 'вселенная'],
+    question: 'Что такое голографическая Вселенная?',
+    answer: 'Дэвид Бом (физик) и Карл Прайбрам (нейрофизиолог) независимо пришли к выводу: реальность — голограмма, и мозг работает по голографическому принципу. Каждая часть содержит целое — как осколок голограммы содержит полное изображение. Мозг — это голограмма, отражающая голографическую Вселенную. Мы — часть единого целого.',
+    source: 'Джон Кехо · Глава 1',
+    related: [{ type: 'book', id: 'kehoe' }]
+  },
+  {
+    keys: ['энергетическая бухгалтерия', 'учёт', 'доллар', 'энергия мысли'],
+    question: 'Влияют ли мысли на реальность?',
+    answer: 'Кехо предлагает метафору: если бы за каждую мысль приходилось получать или отдавать доллар, все стали бы скрупулёзно контролировать свои мысли. Именно это и происходит — только в роли долларов выступает энергия. Вселенная ведёт учёт, и ни одна мысль не остаётся без внимания. Хотите вы этого или нет, но, размышляя, вы всё время создаёте собственную реальность.',
+    source: 'Джон Кехо · Глава 2',
+    related: [{ type: 'book', id: 'kehoe' }, { type: 'theme', id: 'vibration' }]
+  },
+  {
+    keys: ['с чего начать', 'первый шаг', 'как изменить жизнь', 'не знаю с чего'],
+    question: 'С чего начать изменения в жизни?',
+    answer: 'Кехо: первый шаг прост — следить за течением своих мыслей и направлять их. Новое сознание должно идти впереди. Клир: начните с крошечного шага. Сделайте привычку лёгкой. Проктор: задайте себе вопрос — «Чего я хочу?» Не «как этого достичь», а «хочу ли я этого». Решение — единственная предпосылка.',
+    source: 'Синтез трёх авторов',
+    related: [{ type: 'theme', id: 'goals' }, { type: 'theme', id: 'habits' }]
+  },
+  {
+    keys: ['сон', 'сновиден', 'утро', 'как проснуться'],
+    question: 'Как использовать сон для получения ответов?',
+    answer: 'Джон Кехо предлагает упражнение «Сон как ответ»: перед сном обдумайте проблему и повторяйте: «Я увижу сон об этом и найду ответ». Проснувшись, сразу запишите сновидение. Также можно «заказать» пробуждение в определённое время, повторяя перед сном нужное время.',
+    source: 'Джон Кехо · Упражнение «Сон как ответ»',
+    related: [{ type: 'book', id: 'kehoe' }]
+  },
+  {
+    keys: ['проктор', 'боб', 'кто такой проктор'],
+    question: 'Кто такой Боб Проктор?',
+    answer: 'Боб Проктор — легенда мотивационной сферы, автор бестселлера «Вы были рождены богатыми», участник фильма «Секрет». В 1961 году его годовой доход составлял 4000 долларов, а долги — 6000. Через пять лет он зарабатывал свыше миллиона в год. Он изучал разум вместе с Эрлом Найтингейлом и Наполеоном Хиллом. Ключевая тема его работ — парадигмы.',
+    source: 'Боб Проктор · Биография',
+    related: [{ type: 'book', id: 'proctor' }]
+  },
+  {
+    keys: ['клир', 'джеймс', 'кто такой клир', 'атомные привычки'],
+    question: 'Кто такой Джеймс Клир?',
+    answer: 'Джеймс Клир — автор бестселлера «Атомные привычки». В последний день второго года старшей школы получил удар битой по лицу — сломанный нос, трещины в черепе, отёк мозга, искусственная кома. Восстановление заняло месяцы: двоилось в глазах, заново учился ходить. Именно привычки помогли ему восстановиться — и стали основой его системы.',
+    source: 'Джеймс Клир · Атомные привычки',
+    related: [{ type: 'book', id: 'clear' }]
+  },
+  {
+    keys: ['кехо', 'джон', 'кто такой кехо', 'подсознание может'],
+    question: 'Кто такой Джон Кехо?',
+    answer: 'Джон Кехо — автор книги «Подсознание может всё!». В 1975 году ушёл жить в леса, чтобы три года изучать механизмы работы мозга. В 1978 начал обучать людей, к 1980 его лекции пользовались успехом во всём мире. За двадцать лет обучил более 10 000 человек. Ключевая идея — подсознание может всё.',
+    source: 'Джон Кехо · Подсознание может всё',
+    related: [{ type: 'book', id: 'kehoe' }]
+  }
+];
+
+const DEFAULT_ANSWER = {
+  question: '',
+  answer: 'Холст пока не нашёл точного ответа в своей базе. Попробуй переформулировать вопрос или выбери одну из готовых тем: подсознание, парадигмы, привычки, вибрация, цели, деньги, страх, уверенность. А пока — универсальный совет от трёх авторов: начни с маленького шага (Клир), поверь, что ответ существует (Кехо), и действуй, не дожидаясь полной определённости (Проктор).',
+  source: 'Синтез учений',
+  related: []
+};
+
+/* ============================================================
+   СОСТОЯНИЕ
+   ============================================================ */
+let currentBookId = null;
+let bookSlideIndex = 0;
+let lawsSlideIndex = 0;
+
+/* ============================================================
+   НАВИГАЦИЯ
+   ============================================================ */
+function go(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + view);
+  if (el) el.classList.add('active');
+
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (view === 'books') renderBooks();
+  if (view === 'themes') renderThemes();
+  if (view === 'authors') renderAuthors();
+  if (view === 'laws') renderLaws();
+  if (view === 'search') {
+    document.getElementById('searchInput').focus();
+    performSearch('');
+  }
+}
+
+/* ============================================================
+   ОРАКУЛ
+   ============================================================ */
+function askOracle() {
+  const input = document.getElementById('oracleInput');
+  const q = input.value.trim();
+  if (!q) return;
+
+  const btn = document.getElementById('askBtn');
+  btn.disabled = true;
+  btn.textContent = 'Ищу ответ...';
+
+  setTimeout(() => {
+    const result = findAnswer(q);
+    showAnswer(q, result);
+    btn.disabled = false;
+    btn.textContent = 'Получить ответ';
+  }, 500);
+}
+
+function findAnswer(query) {
+  const q = query.toLowerCase().replace(/[?!.,]/g, '');
+
+  let bestMatch = null;
+  let bestScore = 0;
+
+  for (const item of KNOWLEDGE_BASE) {
+    let score = 0;
+    for (const key of item.keys) {
+      if (q.includes(key)) {
+        score += key.length;
+      }
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = item;
+    }
+  }
+
+  return bestMatch || DEFAULT_ANSWER;
+}
+
+function showAnswer(question, result) {
+  const box = document.getElementById('oracleAnswer');
+  document.getElementById('questionEcho').textContent = '«' + question + '»';
+  document.getElementById('answerText').textContent = result.answer;
+  document.getElementById('answerSource').textContent = result.source ? '— ' + result.source : '';
+
+  const related = document.getElementById('relatedLinks');
+  related.innerHTML = (result.related || []).map(r => {
+    if (r.type === 'book') {
+      const book = BOOKS[r.id];
+      if (!book) return '';
+      return `<button class="related-link" onclick="openBook('${r.id}')">📖 ${book.title}</button>`;
+    }
+    if (r.type === 'theme') {
+      const theme = THEMES.find(t => t.id === r.id);
+      if (!theme) return '';
+      return `<button class="related-link" onclick="go('themes')">💡 ${theme.title}</button>`;
+    }
+    if (r.type === 'laws') {
+      return `<button class="related-link" onclick="go('laws')">⚖️ Законы Вселенной</button>`;
+    }
+    return '';
+  }).join('');
+
+  box.classList.add('show');
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function clearOracle() {
+  document.getElementById('oracleInput').value = '';
+  document.getElementById('oracleAnswer').classList.remove('show');
+}
+
+function quickAsk(q) {
+  document.getElementById('oracleInput').value = q;
+  askOracle();
+}
+
+/* ============================================================
+   КНИГИ
+   ============================================================ */
+function renderBooks() {
+  const grid = document.getElementById('booksGrid');
+  if (!grid) return;
+  grid.innerHTML = Object.entries(BOOKS).map(([id, b]) => `
+    <div class="card" onclick="openBook('${id}')">
+      <span class="icon">${b.icon}</span>
+      <h3>${b.title}</h3>
+      <p>${b.author}</p>
+      <span class="card-meta">${b.slides.length} слайдов →</span>
+    </div>
+  `).join('');
+}
+
+function openBook(id) {
+  const book = BOOKS[id];
+  if (!book) return;
+
+  currentBookId = id;
+  bookSlideIndex = 0;
+
+  document.getElementById('bookTitle').textContent = book.title;
+  document.getElementById('bookAuthor').textContent = book.author + ' · ' + book.desc;
+  document.getElementById('bookDisclaimer').innerHTML = book.disclaimer || '';
+
+  renderBookSlide();
+
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-bookView').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderBookSlide() {
+  const book = BOOKS[currentBookId];
+  if (!book) return;
+  const slides = book.slides;
+  const idx = bookSlideIndex;
+
+  const wrap = document.getElementById('bookSlider');
+  wrap.innerHTML = slides.map((s, i) => `
+    <div class="slide ${i === idx ? 'active' : ''}">
+      <div class="slide-tag">${s.tag}</div>
+      <h3>${s.title}</h3>
+      <p>${s.text}</p>
+      ${s.highlight ? `<div class="highlight">${s.highlight}</div>` : ''}
+    </div>
+  `).join('');
+
+  document.getElementById('counter-book').textContent = (idx + 1) + ' / ' + slides.length;
+  document.getElementById('dots-book').innerHTML = slides.map((_, i) =>
+    `<button class="dot ${i === idx ? 'active' : ''}" onclick="goBookSlide(${i})"></button>`
+  ).join('');
+}
+
+function goBookSlide(i) { bookSlideIndex = i; renderBookSlide(); }
+function nextBookSlide() {
+  bookSlideIndex = (bookSlideIndex + 1) % BOOKS[currentBookId].slides.length;
+  renderBookSlide();
+}
+function prevBookSlide() {
+  bookSlideIndex = (bookSlideIndex - 1 + BOOKS[currentBookId].slides.length) % BOOKS[currentBookId].slides.length;
+  renderBookSlide();
+}
+
+/* ============================================================
+   ТЕМЫ
+   ============================================================ */
+function renderThemes() {
+  const list = document.getElementById('themesList');
+  if (!list) return;
+  list.innerHTML = THEMES.map(t => `
+    <div class="theme-block">
+      <h3>${t.icon} ${t.title}</h3>
+      <div class="theme-sub">${t.subtitle}</div>
+      ${t.blocks.map(b => `
+        <div class="source-item">
+          <div class="source-author">${b.author}</div>
+          <div class="source-text">${b.text}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+/* ============================================================
+   ЗАКОНЫ
+   ============================================================ */
+function renderLaws() {
+  const wrap = document.getElementById('lawsSlider');
+  const idx = lawsSlideIndex;
+  wrap.innerHTML = LAWS.map((s, i) => `
+    <div class="slide ${i === idx ? 'active' : ''}">
+      <div class="slide-tag">${s.tag}</div>
+      <h3>${s.title}</h3>
+      <p>${s.text}</p>
+      ${s.highlight ? `<div class="highlight">${s.highlight}</div>` : ''}
+    </div>
+  `).join('');
+
+  document.getElementById('counter-laws').textContent = (idx + 1) + ' / ' + LAWS.length;
+  document.getElementById('dots-laws').innerHTML = LAWS.map((_, i) =>
+    `<button class="dot ${i === idx ? 'active' : ''}" onclick="goLawsSlide(${i})"></button>`
+  ).join('');
+}
+
+function goLawsSlide(i) { lawsSlideIndex = i; renderLaws(); }
+function nextLawsSlide() { lawsSlideIndex = (lawsSlideIndex + 1) % LAWS.length; renderLaws(); }
+function prevLawsSlide() { lawsSlideIndex = (lawsSlideIndex - 1 + LAWS.length) % LAWS.length; renderLaws(); }
+
+/* ============================================================
+   АВТОРЫ
+   ============================================================ */
+function renderAuthors() {
+  const grid = document.getElementById('authorsGrid');
+  if (!grid) return;
+  grid.innerHTML = AUTHORS.map(a => `
+    <div class="card" onclick="openArticle('${a.id}')">
+      <span class="icon">${a.icon}</span>
+      <h3>${a.name}</h3>
+      <p>${a.desc}</p>
+      <span class="card-meta">Читать →</span>
+    </div>
+  `).join('');
+}
+
+function openArticle(id) {
+  const art = ARTICLES[id];
+  if (!art) return;
+  document.getElementById('articleBody').innerHTML = `
+    <h2 style="font-size:1.4rem;margin-bottom:18px">${art.title}</h2>
+    ${art.body}
+  `;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-article').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ============================================================
+   ПОИСК
+   ============================================================ */
+function performSearch(query) {
+  const q = query.toLowerCase().trim();
+  const results = document.getElementById('searchResults');
+
+  if (!q) {
+    results.innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px 0">Начни печатать, чтобы искать по книгам, темам, законам и ответам Оракула.</p>';
+    return;
+  }
+
+  const items = [];
+
+  // Книги
+  Object.entries(BOOKS).forEach(([id, b]) => {
+    b.slides.forEach((s, i) => {
+      const text = (s.title + ' ' + s.text + ' ' + (s.highlight || '')).toLowerCase();
+      if (text.includes(q) || b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q)) {
+        items.push({
+          type: '📖 Книга',
+          title: `${b.title} — ${s.title}`,
+          snippet: s.text.slice(0, 150) + '...',
+          onClick: () => { openBook(id); setTimeout(() => goBookSlide(i), 50); }
+        });
+      }
+    });
+  });
+
+  // Темы
+  THEMES.forEach(t => {
+    const text = (t.title + ' ' + t.subtitle + ' ' + t.blocks.map(b => b.text).join(' ')).toLowerCase();
+    if (text.includes(q)) {
+      items.push({
+        type: '💡 Тема',
+        title: t.title,
+        snippet: t.subtitle,
+        onClick: () => go('themes')
+      });
+    }
+  });
+
+  // Законы
+  LAWS.forEach((l, i) => {
+    const text = (l.title + ' ' + l.text + ' ' + (l.highlight || '')).toLowerCase();
+    if (text.includes(q)) {
+      items.push({
+        type: '⚖️ Закон',
+        title: l.title,
+        snippet: l.text.slice(0, 150) + '...',
+        onClick: () => { go('laws'); setTimeout(() => goLawsSlide(i), 50); }
+      });
+    }
+  });
+
+  // Ответы Оракула
+  KNOWLEDGE_BASE.forEach((kb, i) => {
+    const text = (kb.question + ' ' + kb.answer + ' ' + kb.source).toLowerCase();
+    if (text.includes(q)) {
+      items.push({
+        type: '🔮 Ответ',
+        title: kb.question,
+        snippet: kb.answer.slice(0, 150) + '...',
+        onClick: () => { go('home'); setTimeout(() => quickAsk(kb.question), 100); }
+      });
+    }
+  });
+
+  if (items.length === 0) {
+    results.innerHTML = `<p style="color:var(--muted);text-align:center;padding:40px 0">Ничего не найдено по запросу «${query}».</p>`;
+    return;
+  }
+
+  results.innerHTML = items.map((item, i) => `
+    <div class="search-result" data-idx="${i}">
+      <div class="r-type">${item.type}</div>
+      <div class="r-title">${item.title}</div>
+      <div class="r-snippet">${item.snippet}</div>
+    </div>
+  `).join('');
+
+  results.querySelectorAll('.search-result').forEach((el, i) => {
+    el.addEventListener('click', items[i].onClick);
+  });
+}
+
+/* ============================================================
+   КЛАВИАТУРА
+   ============================================================ */
+document.addEventListener('keydown', e => {
+  // Ctrl+Enter в оракуле
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    if (document.getElementById('view-home').classList.contains('active')) {
+      askOracle();
+    }
+  }
+
+  // Стрелки в слайдерах
+  const bookView = document.getElementById('view-bookView');
+  const lawsView = document.getElementById('view-laws');
+
+  if (bookView.classList.contains('active')) {
+    if (e.key === 'ArrowRight') nextBookSlide();
+    if (e.key === 'ArrowLeft') prevBookSlide();
+  }
+  if (lawsView.classList.contains('active')) {
+    if (e.key === 'ArrowRight') nextLawsSlide();
+    if (e.key === 'ArrowLeft') prevLawsSlide();
+  }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderBooks();
+renderThemes();
+renderAuthors();
+</script>
+
+</body>
+</html>
